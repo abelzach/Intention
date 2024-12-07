@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { useOkto, OktoContextType } from "okto-sdk-react";
 import { EmailOTPVerification } from "@/components/emailOTPVerification";
 import ShimmerButton from "@/components/ui/shimmer-button";
-import UserForm from "./userForm";
+import UserForm from "./userForm/page";
 import { createPublicClient, http, Hex } from "viem";
 import { polygonAmoy } from "viem/chains";
 import { intentiumAddress } from "../../../../common/constants";
@@ -86,12 +86,9 @@ export default function Page() {
               {isLoggedIn ? "Logged In" : "Not Logged In"}
             </span>
           </div>
-          <button
-            onClick={() => setActiveTab("LOGIN")}
-            className="text-blue-500 hover:underline"
-          >
-            Login
-          </button>
+          <Link href="/userForm">
+            <span>Login</span>
+          </Link>
         </div>
         <button
           disabled={!isLoggedIn}
@@ -102,24 +99,20 @@ export default function Page() {
         </button>
       </header>
       <main className="flex flex-col items-center justify-center pt-16 p-6 text-center">
-        {activeTab === "LOGIN" ? (
-          <UserForm />
-        ) : (
-          <div>
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-gray-100">
-              Welcome to Intentium
-            </h1>
-            <p className="text-lg md:text-xl font-semibold mb-8 max-w-xl mx-auto text-gray-400">
-              Revolutionizing crypto transactions with AI-powered solutions.
-              Secure your intents and make the most of your digital assets.
-            </p>
-            <ShimmerButton className="shadow-2xl">
-              <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-                Get Started
-              </span>
-            </ShimmerButton>
-          </div>
-        )}
+        <div>
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-gray-100">
+            Welcome to Intentium
+          </h1>
+          <p className="text-lg md:text-xl font-semibold mb-8 max-w-xl mx-auto text-gray-400">
+            Revolutionizing crypto transactions with AI-powered solutions.
+            Secure your intents and make the most of your digital assets.
+          </p>
+          <ShimmerButton className="shadow-2xl">
+            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+              Get Started
+            </span>
+          </ShimmerButton>
+        </div>
       </main>
     </div>
   );
