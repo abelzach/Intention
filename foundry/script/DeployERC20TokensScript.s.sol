@@ -8,6 +8,9 @@ contract CustomERC20 is ERC20 {
     constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
         _mint(msg.sender, initialSupply * (10 ** decimals()));
     }
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount * (10 ** decimals()));
+    }
 }
 
 contract DeployERC20TokensScript is Script {
