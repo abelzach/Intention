@@ -102,7 +102,7 @@ export default function CreateDashBoard() {
                       Waiting
                     </Button>
                   ) : (
-                    <Button className="w-full text-center">Repay</Button>
+                    <Button className="w-full text-center">Claim</Button>
                   )}
                 </TableCell>
               </TableRow>
