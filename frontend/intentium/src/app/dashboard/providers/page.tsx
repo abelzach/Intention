@@ -16,7 +16,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { approveToken, repayIntent } from "@/lib/transaction";
+import { useOkto, OktoContextType } from "okto-sdk-react";
 
+const networkName = "POLYGON_TESTNET_AMOY";
 interface Collateral {
   nftId: bigint;
   nftAddress: string;
@@ -32,10 +35,63 @@ interface ProviderIntent {
   collateral: Collateral;
 }
 
+interface SolutionIntent {
+  borrowerIntentId: bigint;
+  dueTimestamp: Date;
+  id: string;
+  interest: number;
+  lenderIntentId: string;
+}
+
+function compareTimeStamp(timestamp: any) {
+  const unixTimestampInSeconds = Math.floor(Date.now() / 1000);
+  const retVal = Number(timestamp) - unixTimestampInSeconds;
+  return retVal;
+}
+
 export default function CreateDashBoard() {
+  const { getWallets, executeRawTransaction } = useOkto() as OktoContextType;
   const [providerDataState, setProviderDataState] = useState<ProviderIntent[]>(
     []
   );
+  const [solutionsData, setSolutionsData] = useState<SolutionIntent[]>([]);
+  const [repaySolutionId, setRepaySolutionId] = useState(0);
+
+  const repay = async (tokenAddress: Hex, value: number, solution: any) => {
+    setRepaySolutionId(solution.id);
+
+    const interestAmount: number =
+      (Number(value) * Number(solution.interest)) / 100;
+    const repaymentAmount = Number(value) + interestAmount;
+
+    const wallets = await getWallets();
+    const wallet = wallets.wallets.find(
+      (wallet) => wallet.network_name === networkName
+    );
+    console.log(wallets);
+    if (!wallet) {
+      console.log("PolygonAmoy address not found");
+      return;
+    }
+    const userAddress = wallet.address;
+    console.log("userAddress : ", userAddress);
+
+    const approveTxData = await approveToken(
+      userAddress,
+      repaymentAmount,
+      tokenAddress
+    );
+
+    await executeRawTransaction(approveTxData).then((result) => {
+      console.log("Transaction submitted", result);
+    });
+
+    const repay = await repayIntent(userAddress, repaySolutionId);
+
+    await executeRawTransaction(repay).then((result) => {
+      console.log("Transaction submitted for repay", result);
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +108,14 @@ export default function CreateDashBoard() {
         });
         console.log("BorrowerIntents : ", borrowerData);
         setProviderDataState(borrowerData as ProviderIntent[]);
+
+        const solutionData = await publicClient.readContract({
+          address: intentiumAddress as Hex,
+          abi: intentiumAbi.abi,
+          functionName: "getSolutions",
+        });
+        console.log("solutionData : ", solutionData);
+        setSolutionsData(solutionData as SolutionIntent[]);
       } catch (error) {
         console.error(`Error reading contract `, error);
       }
@@ -91,14 +155,14 @@ export default function CreateDashBoard() {
           <TableBody>
             {providerDataState.map((intent) => (
               <TableRow key={intent.id.toString()}>
-                <TableCell className="font-medium">{intent.owner}</TableCell>
-                <TableCell>{intent.tokenAddress}</TableCell>
+                <TableCell className="font-medium">{`${intent.owner.substring(0, 18)}...`}</TableCell>
+                <TableCell>{`${intent.tokenAddress.substring(0, 18)}...`}</TableCell>
                 <TableCell>
                   {(intent.value / BigInt(1e18)).toString()} Tokens
                 </TableCell>
                 <TableCell>{intent?.minInterest?.toString()}%</TableCell>
                 <TableCell>{intent.collateral.nftId.toString()}</TableCell>
-                <TableCell>{intent.collateral.nftAddress}</TableCell>
+                <TableCell>{`${intent.collateral.nftAddress.substring(0, 18)}...`}</TableCell>
                 <TableCell>
                   {intent.status === 1 ? "Active" : "Completed"}
                 </TableCell>
