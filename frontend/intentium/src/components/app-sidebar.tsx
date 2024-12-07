@@ -14,7 +14,7 @@ import {
 import { useOkto, OktoContextType } from "okto-sdk-react";
 import { useEffect, useState } from "react";
 
-const items = [
+const NAV_ITEMS = [
   {
     title: "Create Intents",
     url: "/dashboard/intents",
@@ -49,23 +49,25 @@ export function AppSidebar() {
   }, [isLoggedIn]);
 
   return (
-    <Sidebar className="h-screen w-64 bg-gray-900 text-white flex flex-col justify-between">
-      <SidebarContent>
+    <Sidebar className="h-screen w-64 bg-white shadow-lg flex flex-col">
+      <SidebarContent className="flex-grow">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xl font-semibold px-4 py-2 text-black">
+          <SidebarGroupLabel className="text-2xl font-bold text-primary-600 px-4 py-6 border-b border-gray-200">
             Intentify
           </SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="mt-4">
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {NAV_ITEMS.map((item) => (
+                <SidebarMenuItem key={item.title} className="mb-2">
                   <SidebarMenuButton asChild>
                     <Link
                       href={item.url}
-                      className="flex items-center space-x-3 px-4 py-2"
+                      className="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-primary-50 transition-colors duration-200 group"
                     >
-                      <item.icon className="w-5 h-5 text-gray-400" />
-                      <span className="text-black">{item.title}</span>
+                      <item.icon className="w-5 h-5 text-primary-500 group-hover:text-primary-600" />
+                      <span className="text-gray-700 font-medium group-hover:text-primary-600">
+                        {item.title}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -75,13 +77,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center space-x-3 mb-4">
-          <User className="w-6 h-6 text-gray-400" />
-          <span className="text-sm text-gray-700">{email}</span>
+          <div className="bg-primary-100 p-2 rounded-full">
+            <User className="w-6 h-6 text-primary-600" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-800">{email}</p>
+            <p className="text-xs text-gray-500">Logged in</p>
+          </div>
         </div>
         <button
-          className="w-full flex items-center justify-center px-4 py-2 bg-gray-600 hover:bg-gray-500 text-sm text-white rounded-md"
+          className="w-full flex items-center justify-center px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-sm text-white rounded-md transition-colors duration-200"
           onClick={() => logOut()}
         >
           <LogOut className="w-5 h-5 mr-2" />
