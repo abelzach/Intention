@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { approveToken, repayIntent } from "@/lib/transaction";
+import { claimCollaeralIntent } from "@/lib/transaction";
 import { useOkto, OktoContextType } from "okto-sdk-react";
 
 const networkName = "POLYGON_TESTNET_AMOY";
@@ -43,55 +43,12 @@ interface SolutionIntent {
   lenderIntentId: string;
 }
 
-function compareTimeStamp(timestamp: any) {
-  const unixTimestampInSeconds = Math.floor(Date.now() / 1000);
-  const retVal = Number(timestamp) - unixTimestampInSeconds;
-  return retVal;
-}
-
 export default function CreateDashBoard() {
   const { getWallets, executeRawTransaction } = useOkto() as OktoContextType;
   const [providerDataState, setProviderDataState] = useState<ProviderIntent[]>(
     []
   );
   const [solutionsData, setSolutionsData] = useState<SolutionIntent[]>([]);
-  const [repaySolutionId, setRepaySolutionId] = useState(0);
-
-  const repay = async (tokenAddress: Hex, value: number, solution: any) => {
-    setRepaySolutionId(solution.id);
-
-    const interestAmount: number =
-      (Number(value) * Number(solution.interest)) / 100;
-    const repaymentAmount = Number(value) + interestAmount;
-
-    const wallets = await getWallets();
-    const wallet = wallets.wallets.find(
-      (wallet) => wallet.network_name === networkName
-    );
-    console.log(wallets);
-    if (!wallet) {
-      console.log("PolygonAmoy address not found");
-      return;
-    }
-    const userAddress = wallet.address;
-    console.log("userAddress : ", userAddress);
-
-    const approveTxData = await approveToken(
-      userAddress,
-      repaymentAmount,
-      tokenAddress
-    );
-
-    await executeRawTransaction(approveTxData).then((result) => {
-      console.log("Transaction submitted", result);
-    });
-
-    const repay = await repayIntent(userAddress, repaySolutionId);
-
-    await executeRawTransaction(repay).then((result) => {
-      console.log("Transaction submitted for repay", result);
-    });
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,13 +58,13 @@ export default function CreateDashBoard() {
       });
 
       try {
-        const borrowerData = await publicClient.readContract({
+        const LenderData = await publicClient.readContract({
           address: intentiumAddress as Hex,
           abi: intentiumAbi.abi,
-          functionName: "getBorrowerIntents",
+          functionName: "getLenderIntents",
         });
-        console.log("BorrowerIntents : ", borrowerData);
-        setProviderDataState(borrowerData as ProviderIntent[]);
+        console.log("LenderIntents : ", LenderData);
+        setProviderDataState(LenderData as ProviderIntent[]);
 
         const solutionData = await publicClient.readContract({
           address: intentiumAddress as Hex,
@@ -127,8 +84,29 @@ export default function CreateDashBoard() {
     const solution = solutionsData.find(
       (item) => BigInt(item.lenderIntentId) == id
     );
+    console.log("Solution to claim ", solution);
     return solution;
   }
+
+  const claimCollateral = async (solutionId: BigInt) => {
+    const wallets = await getWallets();
+    const wallet = wallets.wallets.find(
+      (wallet) => wallet.network_name === networkName
+    );
+    console.log(wallets);
+    if (!wallet) {
+      console.log("PolygonAmoy address not found");
+      return;
+    }
+    const userAddress = wallet.address;
+    console.log("userAddress : ", userAddress);
+
+    const TxData = await claimCollaeralIntent(userAddress, Number(solutionId));
+
+    await executeRawTransaction(TxData).then((result) => {
+      console.log("Transaction submitted claim collateral", result);
+    });
+  };
 
   return (
     <main className="flex flex-col pt-16 p-8">
@@ -152,8 +130,6 @@ export default function CreateDashBoard() {
               <TableCell className="font-bold text-left">
                 MIN INTEREST (%)
               </TableCell>
-              <TableCell className="font-bold text-left">NFT ID</TableCell>
-              <TableCell className="font-bold text-left">NFT ADDRESS</TableCell>
               <TableCell className="font-bold text-left">STATUS</TableCell>
               <TableCell className="font-bold text-left">ACTIONS</TableCell>
             </TableRow>
@@ -162,14 +138,12 @@ export default function CreateDashBoard() {
           <TableBody>
             {providerDataState.map((intent) => (
               <TableRow key={intent.id.toString()}>
-                <TableCell className="font-medium">{`${intent.owner.substring(0, 18)}...`}</TableCell>
-                <TableCell>{`${intent.tokenAddress.substring(0, 18)}...`}</TableCell>
+                <TableCell className="font-medium">{`${intent.owner.substring(0, 30)}...`}</TableCell>
+                <TableCell>{`${intent.tokenAddress.substring(0, 30)}...`}</TableCell>
                 <TableCell>
                   {(intent.value / BigInt(1e18)).toString()} Tokens
                 </TableCell>
                 <TableCell>{intent?.minInterest?.toString()}%</TableCell>
-                <TableCell>{intent.collateral.nftId.toString()}</TableCell>
-                <TableCell>{`${intent.collateral.nftAddress.substring(0, 18)}...`}</TableCell>
                 <TableCell>
                   {intent.status === 1 ? "Active" : "Completed"}
                 </TableCell>
@@ -183,14 +157,13 @@ export default function CreateDashBoard() {
                     <Button
                       className="w-full text-center"
                       onClick={() =>
-                        repay(
-                          intent.tokenAddress as Hex,
-                          Number(intent.value),
-                          findSolutionByLender(intent.id)
+                        claimCollateral(
+                          //@ts-ignore
+                          BigInt(findSolutionByLender(intent?.id).id)
                         )
                       }
                     >
-                      Repay
+                      Claim
                     </Button>
                   )}
                 </TableCell>

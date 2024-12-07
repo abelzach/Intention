@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useOkto, OktoContextType } from "okto-sdk-react";
-import { claimCollaeralIntent } from "@/lib/transaction";
+import { approveToken, repayIntent } from "@/lib/transaction";
 
 const networkName = "POLYGON_TESTNET_AMOY";
 
@@ -68,13 +68,6 @@ export default function CreateDashBoard() {
         });
         console.log("BorrowerIntents : ", borrowerData);
         setBorrowerDataState(borrowerData as BorrowerIntent[]);
-
-        const LenderData = await publicClient.readContract({
-          address: intentiumAddress as Hex,
-          abi: intentiumAbi.abi,
-          functionName: "getLenderIntents",
-        });
-        console.log("LenderIntents : ", LenderData);
       } catch (error) {
         console.error(`Error reading contract `, error);
       }
@@ -82,7 +75,14 @@ export default function CreateDashBoard() {
     fetchData();
   }, []);
 
-  const claimCollateral = async (solutionId: BigInt) => {
+  const repay = async (tokenAddress: Hex, value: number, solution: any) => {
+    console.log("Solution ID : ", solution);
+    console.log("Value : ", value);
+
+    const interestAmount: number =
+      (Number(value) * Number(solution.interest)) / 100;
+    const repaymentAmount = Number(value) + interestAmount;
+
     const wallets = await getWallets();
     const wallet = wallets.wallets.find(
       (wallet) => wallet.network_name === networkName
@@ -95,10 +95,20 @@ export default function CreateDashBoard() {
     const userAddress = wallet.address;
     console.log("userAddress : ", userAddress);
 
-    const TxData = await claimCollaeralIntent(userAddress, Number(solutionId));
+    const approveTxData = await approveToken(
+      userAddress,
+      repaymentAmount,
+      tokenAddress
+    );
 
-    await executeRawTransaction(TxData).then((result) => {
-      console.log("Transaction submitted claim collateral", result);
+    await executeRawTransaction(approveTxData).then((result) => {
+      console.log("Transaction submitted", result);
+    });
+
+    const repay = await repayIntent(userAddress, solution.id);
+
+    await executeRawTransaction(repay).then((result) => {
+      console.log("Transaction submitted for repay", result);
     });
   };
 
@@ -133,37 +143,38 @@ export default function CreateDashBoard() {
 
   return (
     <main className="flex flex-col pt-16 p-6">
-      <h1 className="font-bold text-4xl py-2">Borrower Intents</h1>
-      <p>A detailed list of borrower intents fetched from the blockchain:</p>
+      <h1 className="font-bold text-4xl py-2">Seeker Intents</h1>
+      <p>A detailed list of seeker intents fetched from the blockchain:</p>
       <Separator className="my-4" />
       <div className="border-2 p-3 w-full h-full">
         <Table className="py-4">
           <TableCaption>
-            A list of borrower intents and their details.
+            A list of seeker intents and their details.
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">OWNER</TableHead>
-              <TableHead>TOKEN ADDRESS</TableHead>
-              <TableHead>VALUE</TableHead>
-              <TableHead>MAX INTEREST (%)</TableHead>
-              <TableHead>NFT ID</TableHead>
-              <TableHead>NFT ADDRESS</TableHead>
-              <TableHead>STATUS</TableHead>
-              <TableHead>ACTIONS</TableHead>
+              <TableHead className="font-bold text-left">OWNER</TableHead>
+              <TableHead className="font-bold text-left">
+                TOKEN ADDRESS
+              </TableHead>
+              <TableHead className="font-bold text-left">VALUE</TableHead>
+              <TableHead className="font-bold text-left">NFT ID</TableHead>
+              <TableHead className="font-bold text-left">NFT ADDRESS</TableHead>
+              <TableHead className="font-bold text-left">STATUS</TableHead>
+              <TableHead className="font-bold text-left">ACTIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {borrowerDataState.map((intent, index) => (
               <TableRow key={intent.id.toString() || index}>
-                <TableCell className="font-medium">{intent.owner}</TableCell>
-                <TableCell>{intent.tokenAddress}</TableCell>
+                <TableCell className="font-medium">{`${intent.owner.substring(0, 18)}...`}</TableCell>
+                <TableCell>{`${intent.tokenAddress.substring(0, 18)}...`}</TableCell>
                 <TableCell>
                   {(BigInt(intent.value) / BigInt(1e18)).toString()} Tokens
                 </TableCell>
                 <TableCell>{intent.maxInterest.toString()}%</TableCell>
                 <TableCell>{intent.collateral.nftId.toString()}</TableCell>
-                <TableCell>{intent.collateral.nftAddress}</TableCell>
+                <TableCell>{`${intent.collateral.nftAddress.substring(0, 18)}...`}</TableCell>
                 <TableCell>
                   {intent.status === 1 ? "Active" : "Completed"}
                 </TableCell>
@@ -176,9 +187,10 @@ export default function CreateDashBoard() {
                   ) : (
                     <Button
                       onClick={() =>
-                        claimCollateral(
-                          //@ts-ignore
-                          BigInt(findSolutionByLender(intent?.id).id)
+                        repay(
+                          intent.tokenAddress as Hex,
+                          Number(intent.value),
+                          findSolutionByLender(intent.id)
                         )
                       }
                       className="w-full text-center"
