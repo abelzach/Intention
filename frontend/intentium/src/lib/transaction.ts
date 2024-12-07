@@ -10,7 +10,7 @@ const LoanIntentContractAddress = tokenTroveBroadcast.receipts[0].contractAddres
 
 const networkName = "POLYGON_TESTNET_AMOY";
 
-export function approveToken(userAddress: string, nfid: number, nftAddress: string): ExecuteRawTransaction {
+export function approveNFT(userAddress: string, nfid: number, nftAddress: string): ExecuteRawTransaction {
     const encodedCall = encodeFunctionData({
         abi: erc20Abi.abi,
         functionName: "approve",
@@ -32,6 +32,42 @@ export function createBorrowerIntent(userAddress: string, tokenAddress: string, 
         abi: intentiumAbi.abi,
         functionName: "createBorrowerIntent",
         args: [tokenAddress, BigInt(amount*(10**18)), interest, nftId, nftAddress],
+    });
+    const transactionData = {
+      from: userAddress,
+      to: intentiumAddress,
+      data: encodedCall,
+    };
+    return {
+        network_name: networkName,
+        transaction: transactionData,
+    };
+}
+
+
+export function approveToken(userAddress: string, amount: number, tokenAddress: string): ExecuteRawTransaction {
+    const encodedCall = encodeFunctionData({
+        abi: erc20Abi.abi,
+        functionName: "approve",
+        args: [LoanIntentContractAddress, BigInt(amount*(10**18))],
+    });
+    const transactionData = {
+      from: userAddress,
+      to: tokenAddress,
+      data: encodedCall,
+    };
+    return {
+        network_name: networkName,
+        transaction: transactionData,
+    };
+}
+
+
+export function createLenderIntent(userAddress: string, tokenAddress: string, amount: number, interest:number): ExecuteRawTransaction {
+    const encodedCall = encodeFunctionData({
+        abi: intentiumAbi.abi,
+        functionName: "createLenderIntent",
+        args: [tokenAddress, BigInt(amount*(10**18)), interest],
     });
     const transactionData = {
       from: userAddress,

@@ -6,20 +6,88 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  approveNFT,
+  approveToken,
+  createBorrowerIntent,
+  createLenderIntent,
+} from "@/lib/transaction";
+import { useOkto, OktoContextType } from "okto-sdk-react";
+
+const networkName = "POLYGON_TESTNET_AMOY";
 
 export default function CreateIntentForm() {
   const [activeTab, setActiveTab] = useState("borrower");
   const [formData, setFormData] = useState({
     tokenAddress: "",
-    value: "",
-    interest: "",
-    nftId: "",
+    value: 0,
+    interest: 0,
+    nftId: 0,
     nftAddress: "",
   });
+  const { getWallets, executeRawTransaction } = useOkto() as OktoContextType;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    try {
+      const wallets = await getWallets();
+      const wallet = wallets.wallets.find(
+        (wallet) => wallet.network_name === networkName
+      );
+      console.log(wallets);
+      if (!wallet) {
+        console.log("PolygonAmoy address not found");
+        return;
+      }
+      const userAddress = wallet.address;
+      console.log("userAddress : ", userAddress);
+
+      if (activeTab === "borrower") {
+        const approveTxData = await approveNFT(
+          userAddress,
+          formData.nftId,
+          formData.nftAddress
+        );
+
+        const txData = await createBorrowerIntent(
+          userAddress,
+          formData.tokenAddress,
+          formData.value,
+          formData.interest,
+          formData.nftId,
+          formData.nftAddress
+        );
+
+        await executeRawTransaction(approveTxData).then((result) => {
+          console.log("Transaction submitted", result);
+        });
+        await executeRawTransaction(txData).then((result) => {
+          console.log("Transaction submitted for createBorrowerIntent", result);
+        });
+      } else {
+        const approveTxData = await approveToken(
+          userAddress,
+          formData.value,
+          formData.tokenAddress
+        );
+
+        const txData = await createLenderIntent(
+          userAddress,
+          formData.tokenAddress,
+          formData.value,
+          formData.interest
+        );
+
+        await executeRawTransaction(approveTxData).then((result) => {
+          console.log("Transaction submitted", result);
+        });
+        await executeRawTransaction(txData).then((result) => {
+          console.log("Transaction submitted for createLenderIntent", result);
+        });
+      }
+    } catch (error) {
+      console.error("Error creating intent:", error);
+    }
   };
 
   return (
@@ -73,7 +141,7 @@ export default function CreateIntentForm() {
               type="number"
               value={formData.value}
               onChange={(e) =>
-                setFormData({ ...formData, value: e.target.value })
+                setFormData({ ...formData, value: Number(e.target.value) })
               }
               className="bg-[#2a2b2e] border-0"
               placeholder="190"
@@ -86,7 +154,7 @@ export default function CreateIntentForm() {
               type="number"
               value={formData.interest}
               onChange={(e) =>
-                setFormData({ ...formData, interest: e.target.value })
+                setFormData({ ...formData, interest: Number(e.target.value) })
               }
               className="bg-[#2a2b2e] border-0"
               placeholder={activeTab === "borrower" ? "20" : "15"}
@@ -101,7 +169,7 @@ export default function CreateIntentForm() {
                   type="number"
                   value={formData.nftId}
                   onChange={(e) =>
-                    setFormData({ ...formData, nftId: e.target.value })
+                    setFormData({ ...formData, nftId: Number(e.target.value) })
                   }
                   className="bg-[#2a2b2e] border-0"
                   placeholder="0"

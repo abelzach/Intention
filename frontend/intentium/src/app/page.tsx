@@ -6,6 +6,10 @@ import { useOkto, OktoContextType } from "okto-sdk-react";
 import { EmailOTPVerification } from "@/components/emailOTPVerification";
 import ShimmerButton from "@/components/ui/shimmer-button";
 import UserForm from "./userForm";
+import { createPublicClient, http, Hex } from "viem";
+import { polygonAmoy } from "viem/chains";
+import { intentiumAddress } from "../../../../common/constants";
+import intentiumAbi from "../../../../common/Intentium/Intentium.json";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState<"INTENTIUM" | "LOGIN">(
@@ -32,6 +36,34 @@ export default function Page() {
 
     if (isLoggedIn) fetchData();
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const publicClient = createPublicClient({
+        chain: polygonAmoy,
+        transport: http(),
+      });
+
+      try {
+        const borrowerData = await publicClient.readContract({
+          address: intentiumAddress as Hex,
+          abi: intentiumAbi.abi,
+          functionName: "getBorrowerIntents",
+        });
+        console.log("BorrowerIntents : ", borrowerData);
+
+        const LenderData = await publicClient.readContract({
+          address: intentiumAddress as Hex,
+          abi: intentiumAbi.abi,
+          functionName: "getLenderIntents",
+        });
+        console.log("LenderIntents : ", LenderData);
+      } catch (error) {
+        console.error(`Error reading contract `, error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 text-gray-200">
