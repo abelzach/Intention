@@ -13,13 +13,14 @@ import {
   createLenderIntent,
 } from "@/lib/transaction";
 import { useOkto, OktoContextType } from "okto-sdk-react";
-import Link from "next/link";
+import { Notification } from "@/components/ui/notification";
 
 const networkName = "POLYGON_TESTNET_AMOY";
 
 export default function CreateIntentForm() {
-  const [activeTab, setActiveTab] = useState("borrower");
-  const { isLoggedIn, getUserDetails, createWallet, logOut } =
+  const [activeTab, setActiveTab] = useState("seeker");
+  const [showIntentNotification, setShowIntentNotification] = useState(false);
+  const { isLoggedIn, getUserDetails, createWallet } =
     useOkto() as OktoContextType;
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function CreateIntentForm() {
       }
       const userAddress = wallet.address;
 
-      if (activeTab === "borrower") {
+      if (activeTab === "seeker") {
         const approveTxData = await approveNFT(
           userAddress,
           formData.nftId,
@@ -79,6 +80,7 @@ export default function CreateIntentForm() {
         await executeRawTransaction(approveTxData);
         await executeRawTransaction(txData);
       }
+      setShowIntentNotification(true);
     } catch (error) {
       console.error("Error creating intent:", error);
     }
@@ -101,37 +103,46 @@ export default function CreateIntentForm() {
 
   return (
     <main className="flex flex-col pt-16 p-6 justify-center items-center w-screen">
+      {showIntentNotification && (
+        <Notification
+          message={`${
+            activeTab === "seeker" ? "Borrower" : "Lender"
+          } intent created successfully`}
+          variant="success"
+          onDismiss={() => setShowIntentNotification(false)}
+        />
+      )}
       <Card className="w-full max-w-md bg-white shadow-lg border border-gray-300 rounded-md">
         <CardHeader>
           <Tabs
-            defaultValue="borrower"
+            defaultValue="seeker"
             className="w-full"
             onValueChange={setActiveTab}
           >
             <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-md">
               <TabsTrigger
-                value="borrower"
+                value="seeker"
                 className="hover:bg-gray-200 focus:bg-gray-200"
               >
-                Borrower
+                Seeker
               </TabsTrigger>
               <TabsTrigger
-                value="lender"
+                value="provider"
                 className="hover:bg-gray-200 focus:bg-gray-200"
               >
-                Lender
+                Provider
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="borrower">
+            <TabsContent value="seeker">
               <CardTitle className="text-xl text-center text-black">
                 Create an Intent
-                <span className="block text-sm text-gray-500">(Borrower)</span>
+                <span className="block text-sm text-gray-500">(Seeker)</span>
               </CardTitle>
             </TabsContent>
-            <TabsContent value="lender">
+            <TabsContent value="provider">
               <CardTitle className="text-xl text-center text-black">
                 Create an Intent
-                <span className="block text-sm text-gray-500">(Lender)</span>
+                <span className="block text-sm text-gray-500">(Provider)</span>
               </CardTitle>
             </TabsContent>
           </Tabs>
@@ -182,10 +193,10 @@ export default function CreateIntentForm() {
                   })
                 }
                 className="bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                placeholder={activeTab === "borrower" ? "20" : "15"}
+                placeholder={activeTab === "seeker" ? "20" : "15"}
               />
             </div>
-            {activeTab === "borrower" && (
+            {activeTab === "seeker" && (
               <>
                 <div className="space-y-2">
                   <Label htmlFor="nftId" className="text-black">

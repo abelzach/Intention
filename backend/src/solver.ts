@@ -67,7 +67,7 @@ async function sendSolutions(matchedPairs: Array<{ lender: any, borrower: any }>
         return;
     }
     let errorCount = 0;
-    console.log("#### Sending Sollutions " + matchedPairs.length + " ###");
+    console.log("#### Sending Solutions " + matchedPairs.length + " ###");
     matchedPairs.forEach(async ({lender, borrower}) => {
         try {
             const { request } = await client.simulateContract({

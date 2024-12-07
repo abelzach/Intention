@@ -18,6 +18,7 @@ import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { claimCollaeralIntent } from "@/lib/transaction";
 import { useOkto, OktoContextType } from "okto-sdk-react";
+import { Notification } from "@/components/ui/notification";
 
 const networkName = "POLYGON_TESTNET_AMOY";
 interface Collateral {
@@ -45,6 +46,7 @@ interface SolutionIntent {
 
 export default function CreateDashBoard() {
   const { getWallets, executeRawTransaction } = useOkto() as OktoContextType;
+  const [showIntentNotification, setShowIntentNotification] = useState(false);
   const [providerDataState, setProviderDataState] = useState<ProviderIntent[]>(
     []
   );
@@ -106,10 +108,18 @@ export default function CreateDashBoard() {
     await executeRawTransaction(TxData).then((result) => {
       console.log("Transaction submitted claim collateral", result);
     });
+    setShowIntentNotification(true);
   };
 
   return (
-    <main className="flex flex-col pt-16 p-8">
+    <main className="flex flex-col pt-16 p-6">
+      {showIntentNotification && (
+        <Notification
+          message={`NFT claimed successfully`}
+          variant="success"
+          onDismiss={() => setShowIntentNotification(false)}
+        />
+      )}
       <h1 className="font-bold text-4xl py-2">Provider Intents</h1>
       <p>A detailed list of provider intents fetched from the blockchain:</p>
       <Separator className="my-4" />
@@ -145,10 +155,10 @@ export default function CreateDashBoard() {
                 </TableCell>
                 <TableCell>{intent?.minInterest?.toString()}%</TableCell>
                 <TableCell>
-                  {intent.status === 1 ? "Active" : "Completed"}
+                  {intent.status === 2 ? "Active" : "Completed"}
                 </TableCell>
                 <TableCell>
-                  {intent.status === 1 ? (
+                  {intent.status === 2 ? (
                     <Button disabled className="flex items-center">
                       <Loader2 className="animate-spin mr-2" />
                       Waiting

@@ -77,7 +77,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <div className="border-t border-gray-200 bg-gray-50">
+      <div className=" border-t border-gray-200 bg-gray-50">
         <div className="flex items-center space-x-3 mb-4">
           <div className="bg-primary-100 p-2 rounded-full">
             <User className="w-6 h-6 text-primary-600" />
@@ -88,7 +88,7 @@ export function AppSidebar() {
           </div>
         </div>
         <button
-          className="w-full flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-sm text-white rounded-md transition-colors duration-200"
+          className="w-full flex text-black p-1 py-2.5 mb-2 items-center justify-center bg-black hover:bg-primary-700 text-sm text-white rounded-md transition-colors duration-200"
           onClick={() => logOut()}
         >
           <LogOut className="w-5 h-5 mr-2" />
