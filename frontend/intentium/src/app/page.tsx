@@ -89,6 +89,9 @@ export default function Page() {
           <Link href="/userForm">
             <span>Login</span>
           </Link>
+          <Link href="/dashboard">
+            <span>Dashboard</span>
+          </Link>
         </div>
         <button
           disabled={!isLoggedIn}
