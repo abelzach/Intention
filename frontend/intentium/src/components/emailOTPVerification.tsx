@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useOkto, type OktoContextType } from "okto-sdk-react";
 import { Notification } from "@/components/ui/notification";
+import ShimmerButton from "@/components/ui/shimmer-button";
 
 interface EmailOTPVerificationProps {
   onVerificationSuccess?: () => void;
@@ -81,7 +82,7 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg">
+    <div className="bg-white p-2 rounded-lg">
       {showEmailNotification && (
         <Notification
           message="Email verified successfully"
@@ -110,7 +111,14 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
               type="email"
               disabled={loading}
             />
-            <button
+            <ShimmerButton borderRadius="8px" onClick={handleSendOTP}>
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+              ) : (
+                "Send OTP"
+              )}
+            </ShimmerButton>
+            {/* <button
               className={`h-12 px-12 rounded-lg text-white font-semibold transition
               ${
                 loading || !email
@@ -124,7 +132,7 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
               ) : (
                 "Send OTP"
               )}
-            </button>
+            </button> */}
           </div>
 
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -145,7 +153,7 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
               disabled={loading}
             />
             <button
-              className={`h-12 px-6 rounded-lg text-white font-semibold transition
+              className={`h-12 px-6 rounded-lg text-white font-medium transition
               ${
                 loading || !otp
                   ? "bg-gray-400 cursor-not-allowed"

@@ -49,7 +49,7 @@ export function AppSidebar() {
   }, [isLoggedIn]);
 
   return (
-    <Sidebar className="h-screen w-64 bg-white shadow-lg flex flex-col">
+    <Sidebar className="h-screen w-72 bg-white shadow-lg flex flex-col">
       <SidebarContent className="flex-grow">
         <SidebarGroup>
           <SidebarGroupLabel className="text-2xl font-bold text-primary-600 px-4 py-6 border-b border-gray-200">

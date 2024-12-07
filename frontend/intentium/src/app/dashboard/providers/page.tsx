@@ -131,7 +131,7 @@ export default function CreateDashBoard() {
   }
 
   return (
-    <main className="flex flex-col pt-16 p-6">
+    <main className="flex flex-col pt-16 p-8">
       <h1 className="font-bold text-4xl py-2">Provider Intents</h1>
       <p>A detailed list of provider intents fetched from the blockchain:</p>
       <Separator className="my-4" />
