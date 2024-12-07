@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import React, { useState } from "react";
 import { useOkto, type OktoContextType } from "okto-sdk-react";
 import { Notification } from "@/components/ui/notification";
@@ -83,7 +81,7 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
   };
 
   return (
-    <div className="">
+    <div className="bg-white p-6 rounded-lg">
       {showEmailNotification && (
         <Notification
           message="Email verified successfully"
@@ -100,72 +98,74 @@ export const EmailOTPVerification: React.FC<EmailOTPVerificationProps> = ({
       )}
       {step === "email" ? (
         <>
-          <input
-            className="h-12 w-full text-black border border-gray-300 rounded-lg px-4 mb-2 text-base bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError(null);
-            }}
-            type="email"
-            disabled={loading}
-          />
-
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
-          <button
-            className={`h-12 w-full rounded-lg justify-center items-center mt-2 text-white font-semibold
+          <div className="flex items-center space-x-4">
+            <input
+              className="flex-grow h-12 bg-gray-100 border border-gray-300 rounded-lg px-8 text-base focus:outline-none"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(null);
+              }}
+              type="email"
+              disabled={loading}
+            />
+            <button
+              className={`h-12 px-12 rounded-lg text-white font-semibold transition
               ${
                 loading || !email
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-violet-500 hover:bg-violet-600"
+                  : "bg-black hover:bg-gray-700"
               }`}
-            onClick={handleSendOTP}
-          >
-            {loading ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-            ) : (
-              "Send OTP"
-            )}
-          </button>
+              onClick={handleSendOTP}
+            >
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+              ) : (
+                "Send OTP"
+              )}
+            </button>
+          </div>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </>
       ) : (
         <>
-          <input
-            className="h-12 w-full text-black border border-gray-300 rounded-lg px-4 mb-2 text-base bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => {
-              setOtp(e.target.value);
-              setError(null);
-            }}
-            type="number"
-            maxLength={6}
-            disabled={loading}
-          />
-
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
-          <button
-            className={`h-12 w-full rounded-lg justify-center items-center mt-2 text-white font-semibold
+          <div className="flex items-center space-x-4">
+            <input
+              className="flex-grow h-12 bg-gray-100 border border-gray-300 rounded-lg px-4 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => {
+                setOtp(e.target.value);
+                setError(null);
+              }}
+              type="number"
+              maxLength={6}
+              disabled={loading}
+            />
+            <button
+              className={`h-12 px-6 rounded-lg text-white font-semibold transition
               ${
                 loading || !otp
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-violet-500 hover:bg-violet-600"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
-            onClick={handleVerifyOTP}
-            disabled={loading || !otp}
-          >
-            {loading ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-            ) : (
-              "Verify OTP"
-            )}
-          </button>
+              onClick={handleVerifyOTP}
+              disabled={loading || !otp}
+            >
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+              ) : (
+                "Verify OTP"
+              )}
+            </button>
+          </div>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
           <button
-            className="mt-4 p-2 w-full text-violet-500 text-sm font-medium hover:text-violet-600"
+            className="mt-4 text-indigo-600 hover:text-indigo-700 text-sm font-medium"
             onClick={() => {
               setStep("email");
               setOtp("");

@@ -71,16 +71,23 @@ export default function CreateDashBoard() {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHeader className="w-[100px]">OWNER</TableHeader>
-              <TableHeader>TOKEN ADDRESS</TableHeader>
-              <TableHeader>VALUE (Tokens)</TableHeader>
-              <TableHeader>MIN INTEREST (%)</TableHeader>
-              <TableHeader>NFT ID</TableHeader>
-              <TableHeader>NFT ADDRESS</TableHeader>
-              <TableHeader>STATUS</TableHeader>
-              <TableHeader>ACTIONS</TableHeader>
+              <TableCell className="font-bold text-left">OWNER</TableCell>
+              <TableCell className="font-bold text-left">
+                TOKEN ADDRESS
+              </TableCell>
+              <TableCell className="font-bold text-left">
+                VALUE (Tokens)
+              </TableCell>
+              <TableCell className="font-bold text-left">
+                MIN INTEREST (%)
+              </TableCell>
+              <TableCell className="font-bold text-left">NFT ID</TableCell>
+              <TableCell className="font-bold text-left">NFT ADDRESS</TableCell>
+              <TableCell className="font-bold text-left">STATUS</TableCell>
+              <TableCell className="font-bold text-left">ACTIONS</TableCell>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {providerDataState.map((intent) => (
               <TableRow key={intent.id.toString()}>
@@ -89,7 +96,7 @@ export default function CreateDashBoard() {
                 <TableCell>
                   {(intent.value / BigInt(1e18)).toString()} Tokens
                 </TableCell>
-                <TableCell>{intent.minInterest.toString()}%</TableCell>
+                <TableCell>{intent?.minInterest?.toString()}%</TableCell>
                 <TableCell>{intent.collateral.nftId.toString()}</TableCell>
                 <TableCell>{intent.collateral.nftAddress}</TableCell>
                 <TableCell>
