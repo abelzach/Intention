@@ -23,5 +23,5 @@ Built on the Polygon Amoy Testnet and powered by Okto Wallet, Intentify simplifi
 ### Provider:
     - Provider X offers 700 tokens at 4% interest.
 
-### Solver
+### Solver:
     - The solver function pairs Provider X with both Seekers, allocating tokens proportionally to meet their intents.   
