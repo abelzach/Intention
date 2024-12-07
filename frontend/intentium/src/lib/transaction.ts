@@ -79,3 +79,36 @@ export function createLenderIntent(userAddress: string, tokenAddress: string, am
         transaction: transactionData,
     };
 }
+export function repayIntent(userAddress: string, repaySolutionId:number): ExecuteRawTransaction {
+    const encodedCall = encodeFunctionData({
+        abi: intentiumAbi.abi,
+        functionName: "repay",
+        args: [repaySolutionId],
+    });
+    const transactionData = {
+      from: userAddress,
+      to: intentiumAddress,
+      data: encodedCall,
+    };
+    return {
+        network_name: networkName,
+        transaction: transactionData,
+    };
+}
+
+export function claimCollaeralIntent(userAddress: string, solutionId: number): ExecuteRawTransaction {
+    const encodedCall = encodeFunctionData({
+        abi: intentiumAbi.abi,
+        functionName: "claimCollaeral",
+        args: [solutionId],
+    });
+    const transactionData = {
+      from: userAddress,
+      to: intentiumAddress,
+      data: encodedCall,
+    };
+    return {
+        network_name: networkName,
+        transaction: transactionData,
+    };
+}
