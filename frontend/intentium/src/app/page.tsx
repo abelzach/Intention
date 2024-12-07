@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useOkto, OktoContextType } from "okto-sdk-react";
 import { EmailOTPVerification } from "@/components/emailOTPVerification";
+import ShimmerButton from "@/components/ui/shimmer-button";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState<"INTENTIUM">("INTENTIUM");
@@ -61,6 +62,13 @@ export default function Page() {
       </header>
       <main className="flex flex-col items-center justify-center pt-16 p-6 text-center">
         <div>
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-gray-100">
+            Welcome to Intentium
+          </h1>
+          <p className="text-lg md:text-xl font-semibold mb-8 max-w-xl mx-auto text-gray-400">
+            Revolutionizing crypto transactions with AI-powered solutions.
+            Secure your intents and make the most of your digital assets.
+          </p>
           {!isLoggedIn ? (
             <div className="w-full max-w-md mb-6 bg-gray-800 p-6 rounded-lg shadow-lg">
               <EmailOTPVerification
@@ -73,21 +81,18 @@ export default function Page() {
               />
             </div>
           ) : null}
-
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-4 text-purple-400">
-            Welcome to Intentium
-          </h1>
-          <p className="text-lg md:text-xl mb-8 max-w-xl mx-auto text-gray-400">
-            Revolutionizing crypto transactions with AI-powered solutions.
-            Secure your intents and make the most of your digital assets.
-          </p>
-          <Link
+          {/* <Link
             href="/payout"
             className="flex items-center space-x-2 bg-purple-600 text-white px-8 py-3 rounded-lg shadow-md text-lg font-medium hover:bg-purple-700"
           >
             <span>Get Started</span>
             <ChevronRight className="w-5 h-5" />
-          </Link>
+          </Link> */}
+          <ShimmerButton className="shadow-2xl" borderRadius="50">
+            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+              Get Started
+            </span>
+          </ShimmerButton>
         </div>
       </main>
     </div>
