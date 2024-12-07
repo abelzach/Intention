@@ -123,6 +123,13 @@ export default function CreateDashBoard() {
     fetchData();
   }, []);
 
+  function findSolutionByLender(id: BigInt) {
+    const solution = solutionsData.find(
+      (item) => BigInt(item.lenderIntentId) == id
+    );
+    return solution;
+  }
+
   return (
     <main className="flex flex-col pt-16 p-6">
       <h1 className="font-bold text-4xl py-2">Provider Intents</h1>
@@ -173,7 +180,18 @@ export default function CreateDashBoard() {
                       Waiting
                     </Button>
                   ) : (
-                    <Button className="w-full text-center">Repay</Button>
+                    <Button
+                      className="w-full text-center"
+                      onClick={() =>
+                        repay(
+                          intent.tokenAddress as Hex,
+                          Number(intent.value),
+                          findSolutionByLender(intent.id)
+                        )
+                      }
+                    >
+                      Repay
+                    </Button>
                   )}
                 </TableCell>
               </TableRow>

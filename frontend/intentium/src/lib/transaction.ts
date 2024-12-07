@@ -95,3 +95,20 @@ export function repayIntent(userAddress: string, repaySolutionId:number): Execut
         transaction: transactionData,
     };
 }
+
+export function claimCollaeralIntent(userAddress: string, solutionId: number): ExecuteRawTransaction {
+    const encodedCall = encodeFunctionData({
+        abi: intentiumAbi.abi,
+        functionName: "claimCollaeral",
+        args: [solutionId],
+    });
+    const transactionData = {
+      from: userAddress,
+      to: intentiumAddress,
+      data: encodedCall,
+    };
+    return {
+        network_name: networkName,
+        transaction: transactionData,
+    };
+}

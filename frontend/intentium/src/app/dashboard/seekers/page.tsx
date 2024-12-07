@@ -18,6 +18,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useOkto, OktoContextType } from "okto-sdk-react";
+import { claimCollaeralIntent } from "@/lib/transaction";
+
+const networkName = "POLYGON_TESTNET_AMOY";
 
 interface BorrowerCollateral {
   nftId: bigint;
@@ -34,7 +38,17 @@ interface BorrowerIntent {
   value: bigint;
 }
 
+interface SolutionIntent {
+  borrowerIntentId: bigint;
+  dueTimestamp: Date;
+  id: string;
+  interest: number;
+  lenderIntentId: string;
+}
+
 export default function CreateDashBoard() {
+  const { getWallets, executeRawTransaction } = useOkto() as OktoContextType;
+  const [solutionsData, setSolutionsData] = useState<SolutionIntent[]>([]);
   const [borrowerDataState, setBorrowerDataState] = useState<BorrowerIntent[]>(
     []
   );
@@ -67,6 +81,55 @@ export default function CreateDashBoard() {
     };
     fetchData();
   }, []);
+
+  const claimCollateral = async (solutionId: BigInt) => {
+    const wallets = await getWallets();
+    const wallet = wallets.wallets.find(
+      (wallet) => wallet.network_name === networkName
+    );
+    console.log(wallets);
+    if (!wallet) {
+      console.log("PolygonAmoy address not found");
+      return;
+    }
+    const userAddress = wallet.address;
+    console.log("userAddress : ", userAddress);
+
+    const TxData = await claimCollaeralIntent(userAddress, Number(solutionId));
+
+    await executeRawTransaction(TxData).then((result) => {
+      console.log("Transaction submitted claim collateral", result);
+    });
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const publicClient = createPublicClient({
+        chain: polygonAmoy,
+        transport: http(),
+      });
+
+      try {
+        const solutionData = await publicClient.readContract({
+          address: intentiumAddress as Hex,
+          abi: intentiumAbi.abi,
+          functionName: "getSolutions",
+        });
+        console.log("solutionData : ", solutionData);
+        setSolutionsData(solutionData as SolutionIntent[]);
+      } catch (error) {
+        console.error(`Error reading contract `, error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  function findSolutionByLender(id: BigInt) {
+    const solution = solutionsData.find(
+      (item) => BigInt(item.lenderIntentId) == id
+    );
+    return solution;
+  }
 
   return (
     <main className="flex flex-col pt-16 p-6">
@@ -111,7 +174,17 @@ export default function CreateDashBoard() {
                       Waiting
                     </Button>
                   ) : (
-                    <Button className="w-full text-center">Repay</Button>
+                    <Button
+                      onClick={() =>
+                        claimCollateral(
+                          //@ts-ignore
+                          BigInt(findSolutionByLender(intent?.id).id)
+                        )
+                      }
+                      className="w-full text-center"
+                    >
+                      Repay
+                    </Button>
                   )}
                 </TableCell>
               </TableRow>
