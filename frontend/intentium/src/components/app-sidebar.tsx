@@ -49,7 +49,7 @@ export function AppSidebar() {
   }, [isLoggedIn]);
 
   return (
-    <Sidebar className="h-screen w-72 bg-white shadow-lg flex flex-col">
+    <Sidebar className="h-screen w-64 bg-white shadow-lg flex flex-col">
       <SidebarContent className="flex-grow">
         <SidebarGroup>
           <SidebarGroupLabel className="text-2xl font-bold text-primary-600 px-4 py-6 border-b border-gray-200">
@@ -88,7 +88,7 @@ export function AppSidebar() {
           </div>
         </div>
         <button
-          className="w-full flex text-black p-1 py-2.5 mb-2 items-center justify-center bg-black hover:bg-primary-700 text-sm text-white rounded-md transition-colors duration-200"
+          className="w-56 flex text-black p-1 py-2.5 ml-2 mb-2 items-center justify-center bg-black hover:bg-primary-700 text-sm text-white rounded-md transition-colors duration-200"
           onClick={() => logOut()}
         >
           <LogOut className="w-5 h-5 mr-2" />

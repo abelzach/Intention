@@ -106,7 +106,7 @@ export default function CreateIntentForm() {
       {showIntentNotification && (
         <Notification
           message={`${
-            activeTab === "seeker" ? "Borrower" : "Lender"
+            activeTab === "seeker" ? "Seeker" : "Provider"
           } intent created successfully`}
           variant="success"
           onDismiss={() => setShowIntentNotification(false)}
