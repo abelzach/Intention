@@ -17,24 +17,24 @@ Built on the Polygon Amoy Testnet and powered by Okto Wallet, Intentify simplifi
 
 ## Example Scenario
 ### Seekers:
-    - Seeker A submits an intent for 500 tokens at 5% interest.
-    - Seeker B submits an intent for 200 tokens at interest.
+  Seeker A submits an intent for 500 tokens at 5% interest.
+  Seeker B submits an intent for 200 tokens at interest.
 
 ### Provider:
-    - Provider X offers 700 tokens at 4% interest.
+   Provider X offers 700 tokens at 4% interest.
 
 ### Solver:
-    - The solver function pairs Provider X with both Seekers, allocating tokens proportionally to meet their intents.   
+   The solver function pairs Provider X with both Seekers, allocating tokens proportionally to meet their intents.   
 
 
 ## Getting Started
 ### Frontend
-    - npm install  
-    - npm run dev  
+    npm install  
+    npm run dev  
 
 ### Backend (Solver)
-    - npm install  
-    - npm run dev  
+    npm install  
+    npm run dev  
 ### Foundry
     Follow forge docs
 
