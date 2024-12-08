@@ -25,3 +25,17 @@ Built on the Polygon Amoy Testnet and powered by Okto Wallet, Intentify simplifi
 
 ### Solver:
     - The solver function pairs Provider X with both Seekers, allocating tokens proportionally to meet their intents.   
+
+
+## Getting Started
+### Frontend
+    - npm install  
+    - npm run dev  
+
+### Backend (Solver)
+    - npm install  
+    - npm run dev  
+### Foundry
+    Follow forge docs
+
+
