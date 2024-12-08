@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { useOkto, OktoContextType } from "okto-sdk-react";
 import { EmailOTPVerification } from "@/components/emailOTPVerification";
 import { createPublicClient, http, Hex } from "viem";
 import { polygonAmoy } from "viem/chains";
@@ -13,12 +12,13 @@ import AnimatedGradientText from "@/components/ui/animated-gradient-text";
 import { cn } from "@/lib/utils";
 import GridPattern from "@/components/ui/grid-pattern";
 import Globe from "@/components/ui/globe";
+import { useOkto, OktoContextType } from "okto-sdk-react";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState<"INTENTIUM" | "LOGIN">(
     "INTENTIUM"
   );
-  const { isLoggedIn, getUserDetails, createWallet, logOut } =
+  const { isLoggedIn, createWallet } =
     useOkto() as OktoContextType;
   const router = useRouter();
 
