@@ -61,3 +61,11 @@ The solver function pairs Provider X with both Seekers, allocating tokens propor
 ### Foundry
 
     Follow forge docs
+
+Screenshots : 
+
+<img width="1440" alt="Screenshot 2024-12-08 at 2 08 35 AM" src="https://github.com/user-attachments/assets/a0769081-659d-4262-b354-e2b926c8a90e">
+<img width="1440" alt="Screenshot 2024-12-08 at 2 08 16 AM" src="https://github.com/user-attachments/assets/5b7cea4c-5e9a-453e-8423-34ee6d4638ed">
+<img width="1440" alt="Screenshot 2024-12-08 at 2 08 09 AM" src="https://github.com/user-attachments/assets/749bfa36-8ba6-4189-8d3d-b24cb554c7d5">
+<img width="1438" alt="Screenshot 2024-12-08 at 2 07 58 AM" src="https://github.com/user-attachments/assets/1c515317-a636-4034-b3fb-6987272b54ab">
+<img width="1440" alt="Screenshot 2024-12-08 at 2 07 37 AM" src="https://github.com/user-attachments/assets/ae11ee45-db21-4f81-b300-8cc05faab663">
